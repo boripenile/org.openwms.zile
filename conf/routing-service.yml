@@ -71,7 +71,7 @@ spring:
           import_files: file://${ZILEPRJ}/data/02-1-load-routing.sql
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/INVENTORYDB
+    url: jdbc:postgresql://localhost:5432/testdb
     username: postgres
     password: postgres
 camunda:
