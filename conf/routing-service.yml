@@ -59,7 +59,7 @@ camunda:
 spring:
   config:
     activate:
-      on-profile: ZILEPG
+      on-profile: INVENTORYPG
   jpa:
     database: postgresql
     generate-ddl: true
@@ -71,9 +71,9 @@ spring:
           import_files: file://${ZILEPRJ}/data/02-1-load-routing.sql
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5434/ZILEDB
-    username: ZILE
-    password: ZILE
+    url: jdbc:postgresql://localhost:5432/INVENTORYDB
+    username: INVENTORY
+    password: INVENTORY
 camunda:
   bpm:
     deployment-resource-pattern: file://${ZILEPRJ}/bpmn/camunda/*.bpmn20.xml,file://${ZILEPRJ}/bpmn/camunda/*.bpmn,file://${ZILEPRJ}/bpmn/camunda/*.dmn11.xml,file://${ZILEPRJ}/bpmn/camunda/*.dmn

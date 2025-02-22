@@ -20,7 +20,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: ZILEPG
+      on-profile: INVENTORYPG
   jpa:
     database: postgresql
     generate-ddl: true
@@ -28,7 +28,7 @@ spring:
       ddl-auto: update
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5434/ZILEDB
-    username: ZILE
-    password: ZILE
+    url: jdbc:postgresql://localhost:5432/INVENTORYDB
+    username: INVENTORY
+    password: INVENTORY
 
