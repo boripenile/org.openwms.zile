@@ -20,7 +20,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: INVENTORYPG
+      on-profile: ZILEPG
   jpa:
     database: postgresql
     generate-ddl: true
@@ -29,6 +29,6 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/INVENTORYDB
-    username: INVENTORY
-    password: INVENTORY
+    username: postgres
+    password: postgres
 
