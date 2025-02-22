@@ -1,0 +1,168 @@
+networks:
+  owms:
+
+services:
+
+  ####################################################
+  ## RabbitMQ Message Broker (UI at Port 15673)
+  ####################################################
+  rabbitmq:
+    image: openwms/rabbitmq:latest
+    container_name: rabbitmq
+    hostname: 'mosque'
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - ./out/rabbitmq:/var/lib/rabbitmq
+      - ./out/rabbitmq-mnesia:/var/lib/rabbitmq/mnesia
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS CORE: Jaeger Monitoring (UI at Port 4317)
+  ####################################################
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4317:4317"
+      - "16686:16686"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS Eureka Service Registry (UI at Port 8761)
+  ####################################################
+  srv:
+    image: "interface21/openwms-services:2.2.0"
+    container_name: srv
+    ports:
+      - "8762:8761"
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS Central Configuration Server
+  ####################################################
+  cfg:
+    image: "interface21/openwms-configuration:2.2.0"
+    container_name: cfg
+    environment:
+      spring.profiles.active: "native"
+      spring.cloud.config.server.native.search-locations: file:///openwms/conf
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: cfg
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS CORE: Preferences Service
+  ####################################################
+  core-preferences:
+    image: "openwms/org.openwms.core.preferences:latest"
+    container_name: core-preferences
+    restart: always
+    environment:
+      spring.profiles.active: "ASYNCHRONOUS,DISTRIBUTED,BUTAN"
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: core-preferences
+      owms.tracing.url: http://jaeger:4317
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS TCP/IP Driver for palette conveyor
+  ####################################################
+  tcp-palettconv:
+    image: "openwms/org.openwms.common.comm:1.6.0"
+    container_name: tcp-palettconv
+    restart: always
+    ports:
+      - "30001:30001"
+      - "30002:30002"
+    environment:
+      spring.application.name: tcpip-palettconv
+      spring.profiles.active: "ASYNCHRONOUS,DISTRIBUTED,ZILE"
+      spring.zipkin.base-url: http://tracing:9411/
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: tcpip-palettconv
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS COMMON Services
+  ####################################################
+  common-service:
+    image: "openwms/org.openwms.common.service:3.0.0"
+    container_name: common-service
+    restart: always
+    environment:
+      spring.profiles.active: "ASYNCHRONOUS,DISTRIBUTED,ZILE"
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: common-service
+      owms.tracing.url: http://jaeger:4317
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS Transportation Service
+  ####################################################
+  tms-service:
+    image: "openwms/org.openwms.tms.transportation:latest"
+    container_name: tms-service
+    restart: always
+    environment:
+      spring.profiles.active: "ASYNCHRONOUS,DISTRIBUTED,ZILE"
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: tms-service
+      owms.tracing.url: http://jaeger:4317
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms
+
+  ####################################################
+  ## OpenWMS Routing Services
+  ####################################################
+  routing-service:
+    image: "openwms/org.openwms.tms.routing:latest"
+    container_name: routing-service
+    restart: always
+    environment:
+      spring.profiles.active: "ASYNCHRONOUS,DISTRIBUTED,CAMUNDA,ZILE"
+      spring.rabbitmq.host: rabbitmq
+      owms.eureka.url: http://user:sa@srv:8761
+      owms.srv.hostname: routing-service
+      owms.tracing.url: http://jaeger:4317
+    volumes:
+      - ./:/openwms
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - owms

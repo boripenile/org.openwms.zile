@@ -1,0 +1,19 @@
+owms:
+  tenant: ZILE
+  driver:
+    connections:
+      hostname: 127.0.0.1
+      port-rest: 31003
+      so-timeout: 200000
+      identified-by-field: "TEST"
+      subsystems:
+        - name: SUBS3
+          inbound:
+            mode: server
+            hostname: 0.0.0.0
+            port: 31004
+          outbound:
+            mode: server
+            hostname: 0.0.0.0
+            port: 31005
+            identified-by-value: "SUBS3"

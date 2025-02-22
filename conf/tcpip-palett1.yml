@@ -1,0 +1,18 @@
+owms:
+  driver:
+    connections:
+      hostname: 127.0.0.1
+      port-rest: 30010
+      so-timeout: 200000
+      identified-by-field: "TEST"
+      subsystems:
+        - name: SPS03
+          inbound:
+            mode: server
+            hostname: 0.0.0.0
+            port: 30005
+          outbound:
+            mode: server
+            hostname: 0.0.0.0
+            port: 30006
+            identified-by-value: "SPS03"
